@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class TerrainGeneratorByPerlinNoise : MonoBehaviour
 {
-    public int width = 256;
-    public int height = 256;
-    public float scale = 1.0f;
-    public int octaves = 3;
+    public int width = 16;
+    public int height = 16;
+    public int length = 16;
+    private int noiseWidth;
+    private int noiseLength;
+    public float scale = 20.0f;
+    public int octaves = 2;
     public float persistance = 0.5f;
     public float lacunarity = 2;
-    public int maxHeight = 5;
-    public int chunkNum = 3;
+    public int minHeight = 5;
+    public int maxHeight = 10;
+    public int aroundChunkNum = 1;
+    public int chunkLoadDistance = 0;
 
     public float xOrg = 0;
     public float zOrg = 0;
@@ -19,104 +24,122 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
     public string seed;
     public bool useRandomSeed;
     public bool AutoUpdateMap;
-    public bool UpdateMap;
 
     [SerializeField]
     private PerlinNoise perlinNoise;
     [SerializeField]
-    private GameObject cube;
-    [SerializeField]
-    private GameObject chunk;
+    private GameObject chunkObj;
     [SerializeField]
     private Transform chunkHolder;
+    [SerializeField]
+    private GameObject cube;
+
+    private void Awake()
+    {
+        chunkLoadDistance = width * aroundChunkNum + width / 2;
+
+        StartCoroutine("CoUpdateWorld");
+    }
+
+    private void Start()
+    {
+        for (int x = -aroundChunkNum; x <= aroundChunkNum; x++)
+        {
+            for (int z = -aroundChunkNum; z <= aroundChunkNum; z++)
+            {
+                Vector3 pos = new Vector3(width * x, 0, length * z);
+                GameObject chunkObjClone = Instantiate(chunkObj, pos, Quaternion.identity, chunkHolder);
+                CreateWorld(chunkObjClone.GetComponent<ChunkLoader>(), pos);
+            }
+        }
+    }
 
     private void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (useRandomSeed) seed = Time.time.ToString();
-            System.Random pseudoRandom = new System.Random(seed.GetHashCode());
-            xOrg = pseudoRandom.Next(0, 99999);
-            zOrg = pseudoRandom.Next(0, 99999);
-            CreateWorld(UpdateMap);
-        }
-        if (AutoUpdateMap)
-        {
-            CreateWorld(true);
+            UpdateWorld();
         }
     }
 
-    private void CreateWorld(bool isUpdate)
+    private IEnumerator CoUpdateWorld()
     {
-        for (int x = 0; x < chunkNum; x++)
+        while (true)
         {
-            for (int z = 0; z < chunkNum; z++)
+            if (AutoUpdateMap)
             {
-                Vector3 pos = new Vector3(width * x, 0, height * z);
-                float[,] noiseMap = GenerateMap(pos);
-
-                if (isUpdate == false)
-                {
-                    GameObject chunkObj = Instantiate(chunk, pos, Quaternion.identity, chunkHolder);
-                    CreateChunk(noiseMap, chunkObj.transform);
-                }
-                else
-                {
-                    if (chunkHolder.childCount > x * chunkNum + z)
-                    {
-                        CreateChunk(noiseMap, chunkHolder.GetChild(x * chunkNum + z));
-                    }
-                }
+                UpdateWorld();
             }
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private void SetSeed()
+    {
+        if (useRandomSeed) seed = Time.time.ToString();
+        System.Random pseudoRandom = new System.Random(seed.GetHashCode());
+        xOrg = pseudoRandom.Next(0, 99999);
+        zOrg = pseudoRandom.Next(0, 99999);
+    }
+
+    public void CreateWorld(ChunkLoader chunkLoader, Vector3 pos)
+    {
+        SetSeed();
+        
+        float[,] noiseMap = GenerateMap(pos);
+        CreateChunk(noiseMap, chunkLoader);
+    }
+
+    private void UpdateWorld()
+    {
+        SetSeed();
+
+        for (int i = 0; i < chunkHolder.childCount; i++)
+        {
+            float[,] noiseMap = GenerateMap(chunkHolder.GetChild(i).position);
+            CreateChunk(noiseMap, chunkHolder.GetChild(i).GetComponent<ChunkLoader>());
         }
     }
 
     private float[,] GenerateMap(Vector3 pos)
     {
-        return perlinNoise.GenerateMap(width, height, scale, octaves, persistance, lacunarity, xOrg, zOrg, pos.x, pos.z);
+        noiseWidth = width + 2;
+        noiseLength = length + 2;
+        return perlinNoise.GenerateMap(noiseWidth, noiseLength, scale, octaves, persistance, lacunarity, xOrg, zOrg, pos.x, pos.z);
     }
 
-    public void CreateChunk(float[,] noiseMap, Transform chunkObj)
+    private void CreateChunk(float[,] noiseMap, ChunkLoader chunkLoader)
     {
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
-        int[,] heightMap = SetHeightMap(noiseMap);    
+        Chunk chunk = new Chunk();
+        chunk.blocks = new Block[noiseWidth, height, noiseLength];
 
-        for (int i = 0; i < chunkHolder.childCount; i++)
+        for (int x = 0; x < noiseWidth; x++)
         {
-            for (int x = 0; x < width; x++)
+            for (int z = 0; z < noiseLength; z++)
             {
-                for (int z = 0; z < height; z++)
-                {
-                    Vector3Int newPos = new Vector3Int(x, heightMap[x, z], z);
-                    int index = x * height + z;
-                    if (chunkObj.childCount > index)
-                        chunkObj.GetChild(index).transform.position = newPos;
-                    else Instantiate(cube, newPos, Quaternion.identity, chunkObj);
+                int yCoord = GetHeight(noiseMap[x, z]);
 
-                    chunkObj.GetChild(index).GetComponent<MeshCreator>().BuildMesh(heightMap, newPos);
+                for (int y = 0; y < height; y++)
+                {
+                    if (y <= yCoord)
+                    {
+                        chunk.blocks[x, y, z] = Block.dirt;
+                    }
+                    else
+                    {
+                        chunk.blocks[x, y, z] = Block.air;
+                    }
                 }
             }
-            chunkObj.GetComponent<MeshCombiner>().Combine();
         }
+        chunkLoader.SetChunk(chunk);
+        chunkLoader.CreateMesh();
     }
 
-    public int[,] SetHeightMap(float[,]  noiseMap)
+    public int GetHeight(float perlinValue)
     {
-        int width = noiseMap.GetLength(0);
-        int height = noiseMap.GetLength(1);
-        int[,] heightMap = new int[width, height];
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int z = 0; z < height; z++)
-            {
-                float divide = 1f / maxHeight;
-                float yCoord = Mathf.Floor(noiseMap[x, z] / divide);
-                heightMap[x, z] = Mathf.Clamp((int)yCoord, 0, maxHeight - 1);
-            }
-        }
-
-        return heightMap;
+        float heightValue = 1f / (maxHeight - minHeight);
+        float yCoord = Mathf.Floor(perlinValue / heightValue) + minHeight;
+        return Mathf.Clamp((int)yCoord, 0, maxHeight - 1);
     }
 }

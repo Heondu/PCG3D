@@ -28,7 +28,6 @@ public class PerlinNoise : MonoBehaviour
                 if (noiseHeight > maxNoiseHeight) maxNoiseHeight = noiseHeight;
                 else if (noiseHeight < minNoiseHeight) minNoiseHeight = noiseHeight;
                 noiseMap[x, y] = noiseHeight;
-                Debug.Log($"{minNoiseHeight}, {maxNoiseHeight}");
             }
         }
         for (int x = 0; x < width; x++)
