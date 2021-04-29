@@ -37,6 +37,8 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
     private void Awake()
     {
         chunkLoadDistance = width * aroundChunkNum + width / 2;
+        noiseWidth = width + 2;
+        noiseLength = length + 2;
 
         StartCoroutine("CoUpdateWorld");
     }
@@ -48,8 +50,14 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
             for (int z = -aroundChunkNum; z <= aroundChunkNum; z++)
             {
                 Vector3 pos = new Vector3(width * x, 0, length * z);
+
                 GameObject chunkObjClone = Instantiate(chunkObj, pos, Quaternion.identity, chunkHolder);
-                CreateWorld(chunkObjClone.GetComponent<ChunkLoader>(), pos);
+                ChunkLoader chunkLoader = chunkObjClone.GetComponent<ChunkLoader>();
+                Chunk chunk = new Chunk();
+                chunk.blocks = new Block[noiseWidth, height, noiseLength];
+                chunkLoader.SetChunk(chunk);
+
+                CreateWorld(chunkLoader, pos);
             }
         }
     }
@@ -103,16 +111,11 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
 
     private float[,] GenerateMap(Vector3 pos)
     {
-        noiseWidth = width + 2;
-        noiseLength = length + 2;
         return perlinNoise.GenerateMap(noiseWidth, noiseLength, scale, octaves, persistance, lacunarity, xOrg, zOrg, pos.x, pos.z);
     }
 
     private void CreateChunk(float[,] noiseMap, ChunkLoader chunkLoader)
     {
-        Chunk chunk = new Chunk();
-        chunk.blocks = new Block[noiseWidth, height, noiseLength];
-
         for (int x = 0; x < noiseWidth; x++)
         {
             for (int z = 0; z < noiseLength; z++)
@@ -123,17 +126,16 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
                 {
                     if (y <= yCoord)
                     {
-                        chunk.blocks[x, y, z] = Block.dirt;
+                        chunkLoader.chunk.blocks[x, y, z] = Block.dirt;
                     }
                     else
                     {
-                        chunk.blocks[x, y, z] = Block.air;
+                        chunkLoader.chunk.blocks[x, y, z] = Block.air;
                     }
                 }
             }
         }
-        chunkLoader.SetChunk(chunk);
-        chunkLoader.CreateMesh();
+        chunkLoader.UpdateChunk();
     }
 
     public int GetHeight(float perlinValue)

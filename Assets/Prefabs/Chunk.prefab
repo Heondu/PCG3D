@@ -110,7 +110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 534ba98e4d607f14ebb56bd206a0d97a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cube: {fileID: 2779385288153570332, guid: 1b7d07865f074264db5fd6ca6dc8d5ae, type: 3}
 --- !u!114 &-9200547778633944694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,3 +122,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad8ee4c1285998a4384951cd568c09e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cube: {fileID: 1882840810014743844, guid: 1b7d07865f074264db5fd6ca6dc8d5ae, type: 3}
+  blockHolder: {fileID: 6467770631939948877, guid: 8fc92fc89ba51ec428625e834ffeb0d9, type: 3}
