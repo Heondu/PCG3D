@@ -17,7 +17,7 @@ public class ChunkLoader : MonoBehaviour
     private TerrainGeneratorByPerlinNoise terrainGenerator;
 
     private GameObject[] blocks;
-    private Dictionary<string, BlockData> blockDatas = new Dictionary<string, BlockData>();
+    private BlockData[] blockDatas;
 
     private void Awake()
     {
@@ -42,6 +42,9 @@ public class ChunkLoader : MonoBehaviour
         int height = chunk.blocks.GetLength(1);
         int length = chunk.blocks.GetLength(2);
 
+        List<MeshFilter> meshFilters = new List<MeshFilter>();
+        List<MeshRenderer> meshRenderers = new List<MeshRenderer>();
+
         int index = 0;
         for (int x = 1; x < width - 1; x++)
         {
@@ -49,53 +52,29 @@ public class ChunkLoader : MonoBehaviour
             {
                 for (int y = 0; y < height; y++)
                 {
-                    //Transform parent = transform.Find(chunk.blocks[x, y, z].ToString());
-                    //if (parent == null)
-                    //{
-                    //    parent = Instantiate(blockHolder, transform.position, Quaternion.identity, transform).transform;
-                    //    string name = chunk.blocks[x, y, z].ToString();
-                    //    parent.name = name;
-                    //    blockDatas.Add(name, new BlockData());
-                    //    blockDatas[name].block = chunk.blocks[x, y, z];
-                    //    blockDatas[name].transform = parent;
-                    //
-                    //    Transform meshTop = parent.Find("MeshTop");
-                    //    Transform meshSide = parent.Find("MeshSide");
-                    //    Transform meshBottom = parent.Find("MeshBottom");
-                    //
-                    //    blockDatas[name].meshFilters[0] = meshTop.GetComponent<MeshFilter>();
-                    //    blockDatas[name].meshFilters[1] = meshSide.GetComponent<MeshFilter>();
-                    //    blockDatas[name].meshFilters[2] = meshBottom.GetComponent<MeshFilter>();
-                    //
-                    //    blockDatas[name].meshRenderers[0] = meshTop.GetComponent<MeshRenderer>();
-                    //    blockDatas[name].meshRenderers[1] = meshSide.GetComponent<MeshRenderer>();
-                    //    blockDatas[name].meshRenderers[2] = meshBottom.GetComponent<MeshRenderer>();
-                    //
-                    //    blockDatas[name].meshColliders[0] = meshTop.GetComponent<MeshCollider>();
-                    //    blockDatas[name].meshColliders[1] = meshSide.GetComponent<MeshCollider>();
-                    //    blockDatas[name].meshColliders[2] = meshBottom.GetComponent<MeshCollider>();
-                    //}
-                    //blocks[index].transform.SetParent(parent);
-
+                    Vector3Int newPos = new Vector3Int(x, y, z);
+                    blockDatas[index].transform.position = newPos - Vector3.one * ((float)(width - 2) / 2);
                     if (chunk.blocks[x, y, z] != Block.air)
                     {
-                        Vector3Int newPos = new Vector3Int(x, y, z);
-                        blocks[index].transform.position = newPos - Vector3.one * ((float)(width - 2) / 2);
-                        meshCreator.BuildMesh(chunk, newPos, blocks[index]);
+                        MeshFilter[] meshFilter;
+                        MeshRenderer[] meshRenderer;
+                            
+                        if (meshCreator.BuildMesh(chunk, newPos, blockDatas[index], out meshFilter, out meshRenderer))
+                        {
+                            for (int i = 0; i < meshFilter.Length; i++)
+                            {
+                                meshFilters.Add(meshFilter[i]);
+                                meshRenderers.Add(meshRenderer[i]);
+                                meshFilter[i].gameObject.SetActive(false);
+                            }
+                        }
                     }
                     index++;
                 }
             }
         }
-        meshCreator.Combine();
 
-        //foreach (string key in blockDatas.Keys)
-        //{
-        //    if (blockDatas[key].block != Block.air)
-        //    {
-        //        meshCreator.Combine(blockDatas[key]);
-        //    }
-        //}
+        meshCreator.Combine(meshFilters.ToArray(), meshRenderers.ToArray());
     }
 
     private void LoadChunk()
@@ -132,6 +111,7 @@ public class ChunkLoader : MonoBehaviour
         int length = chunk.blocks.GetLength(2);
 
         List<GameObject> blockList = new List<GameObject>();
+        List<BlockData> blockDataList = new List<BlockData>();
         for (int x = 1; x < width - 1; x++)
         {
             for (int z = 1; z < length - 1; z++)
@@ -140,10 +120,12 @@ public class ChunkLoader : MonoBehaviour
                 {
                     GameObject clone = Instantiate(cube, new Vector3Int(x, y, z) - Vector3.one * ((float)(width - 2) / 2), Quaternion.identity, transform);
                     blockList.Add(clone);
+                    blockDataList.Add(clone.GetComponent<BlockData>());
                     clone.SetActive(false);
                 }
             }
         }
         blocks = blockList.ToArray();
+        blockDatas = blockDataList.ToArray();
     }
 }
