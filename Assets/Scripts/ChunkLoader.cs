@@ -56,17 +56,10 @@ public class ChunkLoader : MonoBehaviour
                     blockDatas[index].transform.position = newPos - Vector3.one * ((float)(width - 2) / 2);
                     if (chunk.blocks[x, y, z] != Block.air)
                     {
-                        MeshFilter[] meshFilter;
-                        MeshRenderer[] meshRenderer;
-                            
-                        if (meshCreator.BuildMesh(chunk, newPos, blockDatas[index], out meshFilter, out meshRenderer))
+                        if (meshCreator.BuildMesh(chunk, newPos, blockDatas[index], out List<MeshFilter> meshFilterList, out List<MeshRenderer> meshRendererList))
                         {
-                            for (int i = 0; i < meshFilter.Length; i++)
-                            {
-                                meshFilters.Add(meshFilter[i]);
-                                meshRenderers.Add(meshRenderer[i]);
-                                meshFilter[i].gameObject.SetActive(false);
-                            }
+                            meshFilters.AddRange(meshFilterList);
+                            meshRenderers.AddRange(meshRendererList);
                         }
                     }
                     index++;

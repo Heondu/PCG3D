@@ -238,6 +238,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d81e415222feb44e8768be3f222d0f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scale: 20
+  octaves: 2
+  persistance: 0.5
+  lacunarity: 2
+  xOrg: 0
+  zOrg: 0
+  seed: 
+  useRandomSeed: 1
+  AutoUpdateMap: 0
 --- !u!114 &406681535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,21 +260,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   width: 16
-  height: 16
+  height: 32
   length: 16
-  scale: 20
-  octaves: 2
-  persistance: 0.5
-  lacunarity: 2
-  minHeight: 5
-  maxHeight: 10
+  minHeight: 16
+  scaleHeight: 10
   aroundChunkNum: 1
   chunkLoadDistance: 0
-  xOrg: 0
-  zOrg: 0
-  seed: 
-  useRandomSeed: 0
-  AutoUpdateMap: 0
   perlinNoise: {fileID: 406681534}
   chunkObj: {fileID: 1926805764449460233, guid: 3818d1798cf173b4fb3eac18ff143a1d, type: 3}
   chunkHolder: {fileID: 893164281}
@@ -756,7 +756,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1657550730821697681, guid: caf328a86cdcb244194dc609c2f23bd6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 1657550730821697681, guid: caf328a86cdcb244194dc609c2f23bd6, type: 3}
       propertyPath: m_LocalPosition.z

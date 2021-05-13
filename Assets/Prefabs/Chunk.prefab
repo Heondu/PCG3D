@@ -110,6 +110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 534ba98e4d607f14ebb56bd206a0d97a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meshFilter:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &-9200547778633944694
 MonoBehaviour:
   m_ObjectHideFlags: 0
