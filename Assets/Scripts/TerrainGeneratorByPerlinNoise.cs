@@ -22,6 +22,11 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
     private Transform chunkHolder;
     [SerializeField]
     private GameObject cube;
+    [SerializeField]
+    private GameObject tree;
+    [Range(0, 100)]
+    [SerializeField]
+    private int treeProb = 10;
 
     private void Awake()
     {
@@ -49,25 +54,9 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            UpdateWorld();
-        }
-    }
-
     public void CreateWorld(ChunkLoader chunkLoader, Vector3 pos)
     {
         CreateChunk(chunkLoader, Vector3Int.RoundToInt(pos));
-    }
-
-    private void UpdateWorld()
-    {
-        for (int i = 0; i < chunkHolder.childCount; i++)
-        {
-            CreateChunk(chunkHolder.GetChild(i).GetComponent<ChunkLoader>(), Vector3Int.RoundToInt(chunkHolder.GetChild(i).position));
-        }
     }
 
     private void CreateChunk(ChunkLoader chunkLoader, Vector3Int pos)
@@ -76,33 +65,77 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
         chunkLoader.chunk.height = height;
         chunkLoader.chunk.length = noiseLength;
 
-        for (int x = 0; x < noiseWidth; x++)
+        List<Vector2Int> ground = new List<Vector2Int>();
+        for (int y = 0; y < height; y++)
         {
-            for (int z = 0; z < noiseLength; z++)
+            for (int x = 0; x < noiseWidth; x++)
             {
-                for (int y = 0; y < height; y++)
+                for (int z = 0; z < noiseLength; z++)
                 {
-                    if (GetHeight(perlinNoise.GenerateMap(x + pos.x, y, z + pos.z), y) > 0f)
-                    //if (perlinNoise.GenerateMap(x + pos.x, y, z + pos.z) > 0f)
+                    float perlinValue = GetHeight(perlinNoise.GenerateMap(x + pos.x, y, z + pos.z), y);
+                    if (perlinValue > 0)
                     {
                         chunkLoader.chunk.blocks[x, y, z] = Block.dirt;
+
+                        if (y == 0 && x >= 2 && x < noiseWidth - 3 && z >= 2 && z < noiseLength - 3)
+                        {
+                            ground.Add(new Vector2Int(x, z));
+                        }
                     }
                     else
                     {
-                        chunkLoader.chunk.blocks[x, y, z] = Block.air;
+                        if (y < 8)
+                        {
+                            chunkLoader.chunk.blocks[x, y, z] = Block.water;
+                        }
+                        else
+                        {
+                            chunkLoader.chunk.blocks[x, y, z] = Block.air;
+                        }
                     }
                 }
             }
         }
+
+        int count = ground.Count;
+        for (int i = 0; i < count; i++)
+        {
+            int rand = Random.Range(0, 101);
+            if (rand > treeProb) continue;
+
+            int index = Random.Range(0, ground.Count);
+            int x = ground[index].x;
+            int z = ground[index].y;
+            int y = height;
+            ground.RemoveAt(index);
+            while (y != 0 && chunkLoader.chunk.blocks[x, y - 1, z] == Block.air) y--;
+            if (chunkLoader.chunk.blocks[x, y - 1, z] != Block.dirt) continue;
+            BuildTree(chunkLoader.chunk, x, y, z);
+        }
+
         chunkLoader.UpdateChunk();
     }
 
     public float GetHeight(float perlinValue, int y)
     {
-        //float heightValue = 1f / (maxHeight - minHeight);
-        //float yCoord = Mathf.Floor(perlinValue / heightValue) + minHeight - y;
-        //return Mathf.Clamp((int)yCoord, 0, maxHeight - 1);
-
         return perlinValue * scaleHeight + minHeight - y;
+    }
+
+    private void BuildTree(Chunk chunk, int _x, int _y, int _z)
+    {
+        int width = Structure.instance.tree.GetLength(0);
+        int height = Structure.instance.tree.GetLength(1);
+        int length = Structure.instance.tree.GetLength(2);
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int z = 0; z < length; z++)
+                {
+                    chunk.SetBlock(Structure.instance.tree[x, y, z], -height / 2 + y + _x, x + _y, -length / 2 + z + _z);
+                }
+            }
+        }
     }
 }

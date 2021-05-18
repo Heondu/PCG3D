@@ -53,7 +53,8 @@ public class ChunkLoader : MonoBehaviour
                 for (int y = 0; y < height; y++)
                 {
                     Vector3Int newPos = new Vector3Int(x, y, z);
-                    blockDatas[index].transform.position = newPos - Vector3.one * ((float)(width - 2) / 2);
+                    blockDatas[index].transform.position = newPos - new Vector3((width - 2) / 2, 0, (length - 2) / 2);
+
                     if (chunk.blocks[x, y, z] != Block.air)
                     {
                         if (meshCreator.BuildMesh(chunk, newPos, blockDatas[index], out List<MeshFilter> meshFilterList, out List<MeshRenderer> meshRendererList))

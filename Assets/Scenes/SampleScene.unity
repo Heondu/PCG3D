@@ -123,6 +123,69 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &25545899
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 25545901}
+  - component: {fileID: 25545900}
+  - component: {fileID: 25545902}
+  m_Layer: 0
+  m_Name: BockDataManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &25545900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25545899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 930eea1197e3a854dac169c4df581693, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockDatas:
+  - {fileID: 0}
+  - {fileID: 4875896325280240683, guid: 124046d2d9319ea40b31be23c7ce8d11, type: 3}
+  - {fileID: 4740127030694942268, guid: a23e01716d30d894fb045944372c1802, type: 3}
+  - {fileID: 2880278155241141428, guid: 4ce9d94c142d21147902fee03ba19d12, type: 3}
+  - {fileID: 2760049813719791811, guid: 863fe4cc2fe76f74caba8777145b9de3, type: 3}
+  - {fileID: 7771534471506245992, guid: fb3ad128137bd4346bcf8e078c12db6e, type: 3}
+--- !u!4 &25545901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25545899}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &25545902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25545899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c7b448f10db7844b9fe0168e6b30b23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &356499256
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -263,13 +326,15 @@ MonoBehaviour:
   height: 32
   length: 16
   minHeight: 16
-  scaleHeight: 10
+  scaleHeight: 32
   aroundChunkNum: 1
   chunkLoadDistance: 0
   perlinNoise: {fileID: 406681534}
   chunkObj: {fileID: 1926805764449460233, guid: 3818d1798cf173b4fb3eac18ff143a1d, type: 3}
   chunkHolder: {fileID: 893164281}
   cube: {fileID: 1657550730821697693, guid: caf328a86cdcb244194dc609c2f23bd6, type: 3}
+  tree: {fileID: 4479273964923231724, guid: c0999a2c36d4bf8409e5449d87648a2d, type: 3}
+  treeProb: 5
 --- !u!4 &406681536
 Transform:
   m_ObjectHideFlags: 0

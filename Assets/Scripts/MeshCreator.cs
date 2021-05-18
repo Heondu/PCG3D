@@ -32,26 +32,31 @@ public class MeshCreator : MonoBehaviour
         int y = pos.y;
         int z = pos.z;
 
-        bool[] isAirBlock = { false, false, false, false, false, false };
-
-        if (chunk.GetBlock(x, y, z + 1) == Block.air) isAirBlock[0] = true;
-        if (chunk.GetBlock(x, y, z - 1) == Block.air) isAirBlock[1] = true;
-        if (chunk.GetBlock(x + 1, y, z) == Block.air) isAirBlock[2] = true;
-        if (chunk.GetBlock(x - 1, y, z) == Block.air) isAirBlock[3] = true;
-        if (chunk.GetBlock(x, y + 1, z) == Block.air) isAirBlock[4] = true;
-        if (chunk.GetBlock(x, y - 1, z) == Block.air) isAirBlock[5] = true;
+        bool[] culling = { false, false, false, false, false, false };
+        Block block = chunk.GetBlock(x, y, z);
+        Block[] blocks = chunk.FindSurroundingBlock(x, y, z);
+        
+        AssignBlockData(blockData, chunk.GetBlock(x, y, z));
 
         for (int i = 0; i < 6; i++)
         {
-            if (isAirBlock[i])
-            {
-                meshFilterList.Add(blockData.meshFilters[i]);
-                meshRendererList.Add(blockData.meshRenderers[i]);
-                flag = true;
-            }
+            if (block == blocks[i]) continue;
+            else if (blocks[i] == Block.air) culling[i] = true;
+            else if (blocks[i] == Block.water) culling[i] = true;
+
+            meshFilterList.Add(blockData.meshFilters[i]);
+            meshRendererList.Add(blockData.meshRenderers[i]);
+            flag = true;
         }
 
         return flag;
+    }
+
+    private void AssignBlockData(BlockData blockData, Block block)
+    {
+        BlockData otherBlockData = BlockDataManager.instance.GetBlockData(block);
+        blockData.block = otherBlockData.block;
+        blockData.meshRenderers = otherBlockData.meshRenderers;
     }
 
     public void Combine(MeshFilter[] meshFilters, MeshRenderer[] meshRenderers)

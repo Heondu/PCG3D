@@ -3,7 +3,11 @@ using UnityEngine;
 public enum Block
 {
     air,
-    dirt
+    dirt,
+    water,
+    stone,
+    log_oak,
+    leaves_oak
 }
 
 public class BlockData : MonoBehaviour

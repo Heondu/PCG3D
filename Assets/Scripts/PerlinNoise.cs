@@ -16,7 +16,7 @@ public class PerlinNoise : MonoBehaviour
 
     private void Awake()
     {
-        if (useRandomSeed) seed = Time.time.ToString();
+        if (useRandomSeed) seed = Time.realtimeSinceStartup.ToString();
         System.Random pseudoRandom = new System.Random(seed.GetHashCode());
         xOrg = pseudoRandom.Next(0, 99999);
         zOrg = pseudoRandom.Next(0, 99999);
@@ -36,13 +36,13 @@ public class PerlinNoise : MonoBehaviour
             float yCoord = y / scale * frequency;
             float zCoord = zOrg + z / scale * frequency;
 
-            float xy = Mathf.PerlinNoise(xCoord, yCoord) * 2 - 1;
-            float yz = Mathf.PerlinNoise(yCoord, zCoord) * 2 - 1;
-            float xz = Mathf.PerlinNoise(xCoord, zCoord) * 2 - 1;
-            float yx = Mathf.PerlinNoise(yCoord, xCoord) * 2 - 1;
-            float zy = Mathf.PerlinNoise(zCoord, yCoord) * 2 - 1;
-            float zx = Mathf.PerlinNoise(zCoord, xCoord) * 2 - 1;
-            float perlinValue = (xy + yz + xz + yx + zy + zx) / 6f;
+            float xy = Mathf.PerlinNoise(xCoord, yCoord);
+            float yz = Mathf.PerlinNoise(yCoord, zCoord);
+            float xz = Mathf.PerlinNoise(xCoord, zCoord);
+            float yx = Mathf.PerlinNoise(yCoord, xCoord);
+            float zy = Mathf.PerlinNoise(zCoord, yCoord);
+            float zx = Mathf.PerlinNoise(zCoord, xCoord);
+            float perlinValue = (xy + yz + xz + yx + zy + zx) / 6f * 2 - 1;
 
             noiseHeight += perlinValue * amplitude;
             amplitude *= persistance;
