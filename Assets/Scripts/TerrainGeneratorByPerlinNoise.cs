@@ -75,9 +75,9 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
                     float perlinValue = GetHeight(perlinNoise.GenerateMap(x + pos.x, y, z + pos.z), y);
                     if (perlinValue > 0)
                     {
-                        chunkLoader.chunk.blocks[x, y, z] = Block.dirt;
+                        chunkLoader.chunk.blocks[x, y, z] = Block.stone;
 
-                        if (y == 0 && x >= 2 && x < noiseWidth - 3 && z >= 2 && z < noiseLength - 3)
+                        if (y == 0)
                         {
                             ground.Add(new Vector2Int(x, z));
                         }
@@ -97,20 +97,23 @@ public class TerrainGeneratorByPerlinNoise : MonoBehaviour
             }
         }
 
-        int count = ground.Count;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < ground.Count; i++)
         {
+            int y = height;
+            while (y != 0 && chunkLoader.chunk.blocks[ground[i].x, y - 1, ground[i].y] != Block.stone) y--;
+            if (y < height)chunkLoader.chunk.blocks[ground[i].x, y, ground[i].y] = Block.grass;
+            for (int j = 1; j < 4; j++)
+            {
+                if (y - j >= 0) chunkLoader.chunk.blocks[ground[i].x, y - j, ground[i].y] = Block.dirt;
+            }
+
             int rand = Random.Range(0, 101);
             if (rand > treeProb) continue;
-
-            int index = Random.Range(0, ground.Count);
-            int x = ground[index].x;
-            int z = ground[index].y;
-            int y = height;
-            ground.RemoveAt(index);
-            while (y != 0 && chunkLoader.chunk.blocks[x, y - 1, z] == Block.air) y--;
-            if (chunkLoader.chunk.blocks[x, y - 1, z] != Block.dirt) continue;
-            BuildTree(chunkLoader.chunk, x, y, z);
+            if (ground[i].x >= 2 && ground[i].x < noiseWidth - 3 && ground[i].y >= 2 && ground[i].y < noiseLength - 3)
+            {
+                if (y + 1 < height && y >= 0 && chunkLoader.chunk.blocks[ground[i].x, y + 1, ground[i].y] == Block.air)
+                    BuildTree(chunkLoader.chunk, ground[i].x, y + 1, ground[i].y);
+            }
         }
 
         chunkLoader.UpdateChunk();

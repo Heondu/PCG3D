@@ -155,11 +155,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockDatas:
   - {fileID: 0}
-  - {fileID: 4875896325280240683, guid: 124046d2d9319ea40b31be23c7ce8d11, type: 3}
+  - {fileID: 839052742022352481, guid: 681e4b96b47ec414d9018fbacbb0fb67, type: 3}
   - {fileID: 4740127030694942268, guid: a23e01716d30d894fb045944372c1802, type: 3}
   - {fileID: 2880278155241141428, guid: 4ce9d94c142d21147902fee03ba19d12, type: 3}
   - {fileID: 2760049813719791811, guid: 863fe4cc2fe76f74caba8777145b9de3, type: 3}
   - {fileID: 7771534471506245992, guid: fb3ad128137bd4346bcf8e078c12db6e, type: 3}
+  - {fileID: 4875896325280240683, guid: 124046d2d9319ea40b31be23c7ce8d11, type: 3}
 --- !u!4 &25545901
 Transform:
   m_ObjectHideFlags: 0
@@ -307,8 +308,8 @@ MonoBehaviour:
   lacunarity: 2
   xOrg: 0
   zOrg: 0
-  seed: 
-  useRandomSeed: 1
+  seed: 7.279132
+  useRandomSeed: 0
   AutoUpdateMap: 0
 --- !u!114 &406681535
 MonoBehaviour:
@@ -327,14 +328,14 @@ MonoBehaviour:
   length: 16
   minHeight: 16
   scaleHeight: 32
-  aroundChunkNum: 1
+  aroundChunkNum: 2
   chunkLoadDistance: 0
   perlinNoise: {fileID: 406681534}
   chunkObj: {fileID: 1926805764449460233, guid: 3818d1798cf173b4fb3eac18ff143a1d, type: 3}
   chunkHolder: {fileID: 893164281}
   cube: {fileID: 1657550730821697693, guid: caf328a86cdcb244194dc609c2f23bd6, type: 3}
   tree: {fileID: 4479273964923231724, guid: c0999a2c36d4bf8409e5449d87648a2d, type: 3}
-  treeProb: 5
+  treeProb: 3
 --- !u!4 &406681536
 Transform:
   m_ObjectHideFlags: 0
@@ -474,8 +475,8 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 1.8
+  m_Radius: 0.4
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -491,8 +492,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.4
+  m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &734246146

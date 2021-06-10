@@ -7,7 +7,8 @@ public enum Block
     water,
     stone,
     log_oak,
-    leaves_oak
+    leaves_oak,
+    grass
 }
 
 public class BlockData : MonoBehaviour
